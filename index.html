@@ -1,1 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Covid App with Shiny</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Covid App with Shiny">
+  <meta name="author" content="Irina White">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
 
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  
+  <hgroup class="auto-fadein">
+    <h1>Covid App with Shiny</h1>
+    <h2>Overview</h2>
+    <p>Irina White<br/>August 2021</p>
+  </hgroup>
+  
+  <article></article>  
+  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  
+  <hgroup>
+    <h2>Summary</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <p>The app has been done as a final assignment of the course.
+The data ised in the app can be obtained from the open source:
+<a href="https://covid.ourworldindata.org/data/owid-covid-data.csv">https://covid.ourworldindata.org/data/owid-covid-data.csv</a></p>
+
+<p>The data for the project has been slighly modified for simplicity, it will be overview in slide 3.
+The app shows the side panel with the options to input and 4 tabs with the outputs.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  
+  <hgroup>
+    <h2>Tabs of the apps</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <ul>
+<li>Tab 1: the visual representation of the changes in Covid-19 numbers related to death or number of cases.
+<br></li>
+<li>Tab2: includes the tabular format of the same information.
+<br></li>
+<li>Tab3: the prediction Tab includes plot of linear regression of new daily cases and 
+potential number of new daily cases in 6-month time in the selected country.
+<br></li>
+<li>Tab 4: the documentation, overview of the app related information.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  
+  <hgroup>
+    <h2>Overview of the Data manipulation</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <pre><code class="r">#download file and subset the data
+temp &lt;- tempfile()
+download.file(
+   &quot;https://covid.ourworldindata.org/data/owid-covid-data.csv&quot;, temp)
+mydata&lt;-read.csv(temp)
+unlink(temp)
+mywdata&lt;-mydata[,c(2,3,4,5,8,9)]
+mywdata&lt;-mywdata[complete.cases(mywdata$total_deaths),]
+mywdata&lt;-subset(mywdata, mywdata$continent!=&quot;&quot;)
+head(mywdata,2)
+</code></pre>
+
+<pre><code>##    continent    location       date total_cases total_deaths new_deaths
+## 28      Asia Afghanistan 2020-03-22          34            1          1
+## 29      Asia Afghanistan 2020-03-23          41            1          0
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  
+  <hgroup>
+    <h2>Plot Example for Canada</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-2-1.png" alt="plot of chunk unnamed-chunk-2"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  
+  <hgroup>
+    <h2>Prediction Example for Canada</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <pre><code class="r">library(lubridate)
+mdata&lt;-subset(mywdata, mywdata$location==&quot;Canada&quot;)
+model&lt;-lm(new_deaths~as.Date(date), data=mdata)
+d &lt;- ymd(Sys.Date()) %m+% months(6)
+pr&lt;-round(predict(model, newdata = data.frame(&#39;date&#39;=as.character(d))),0)
+paste(&quot;The predicted number of new deaths in 6 months time for Canada&quot;) 
+</code></pre>
+
+<pre><code>## [1] &quot;The predicted number of new deaths in 6 months time for Canada&quot;
+</code></pre>
+
+<pre><code class="r">paste(&quot;based on the previous data is&quot;, pr )
+</code></pre>
+
+<pre><code>## [1] &quot;based on the previous data is 23&quot;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Summary'>
+         1
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Tabs of the apps'>
+         2
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Overview of the Data manipulation'>
+         3
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Plot Example for Canada'>
+         4
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Prediction Example for Canada'>
+         5
+      </a>
+    </li>
+    
+    </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
